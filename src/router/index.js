@@ -1,11 +1,28 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import Login from '../components/Login.vue'
 
 const routes = [
   {
     path: '/',
     name: 'home',
     component: HomeView
+  },
+  {
+    path: '/vehiculo',
+    name: 'vehiculo',
+    component: () => import('../views/VehiculoView.vue'),
+    meta: {
+      esPublica: true
+    }
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: Login,
+    meta: {
+      esPublica: true
+    }
   },
   {
     path: '/about',
@@ -20,6 +37,17 @@ const routes = [
 const router = createRouter({
   history: createWebHashHistory(),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  const esPublica = to.meta.esPublica ?? true;
+  const token = localStorage.getItem('token');
+
+  if (!esPublica && !token) {
+    next({ name: 'login' });
+  } else {
+    next();
+  }
 })
 
 export default router
